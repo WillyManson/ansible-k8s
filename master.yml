@@ -1,0 +1,42 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: Disable swap
+      shell: "swapoff -a"
+
+    - name: initialize the cluster
+      shell: kubeadm init >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: ansk8s
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to users kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/ansk8s/.kube/config
+        remote_src: yes
+        owner: ansk8s
+
+    - name: install Pod network
+      become: yes
+      become_user: ansk8s
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup1.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup1.txt
+
+    - name: install Pod network N2
+      become: yes
+      become_user: ansk8s
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml >> pod_network_setup2.txt
+      args:
+        chdir: $HOME
+        creates: pod_network_setup2.txt
