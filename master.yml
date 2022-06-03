@@ -3,6 +3,8 @@
   tasks:
     - name: Disable swap
       shell: "swapoff -a"
+    - name: Disable swap fstab
+      shell: "sudo sed '/swap.img/d' -i /etc/fstab"
 
     - name: initialize the cluster
       shell: kubeadm init >> cluster_initialized.txt
