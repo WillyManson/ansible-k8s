@@ -6,6 +6,11 @@
        name: docker.io
        state: present
        update_cache: true
+       
+   - name: install gnupg
+     apt:
+       name: gnupg
+       state: present
 
    - name: install APT Transport HTTPS
      apt:
