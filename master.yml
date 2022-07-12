@@ -11,6 +11,10 @@
       args:
         chdir: $HOME
         creates: cluster_initialized.txt
+        
+    - name: sleep for 30 seconds
+      wait_for:
+        timeout: 30
 
     - name: create .kube directory
       become: yes
